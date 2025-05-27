@@ -21,10 +21,10 @@
 - [x] **`--simulate` Mode**
   - Add global flag to safely simulate exploits without system changes
   - Pass `simulate=True` to `run()` in all plugins
-- [ ] **Confirmation Prompt for Real Exploits**
+- [x] **Confirmation Prompt for Real Exploits**
   - Add confirmation before executing any real exploit if `--simulate` is not used
   - Print clear warning and block unless user types `"yes"`
-- [ ] **PoC Compatibility Refactor**
+- [x] **PoC Compatibility Refactor**
   - Ensure all existing PoCs support `simulate=True` and honor safety flow
 
 ## 🔬 Phase 4: PoC Expansion and Target Diversity

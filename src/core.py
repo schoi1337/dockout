@@ -1,4 +1,4 @@
-# src/core.py
+# Path: src/core.py
 
 import argparse
 import asyncio
@@ -72,6 +72,14 @@ async def run_all_attacks_async(container, simulate):
 
 if __name__ == "__main__":
     args = parse_args()
+
+    if not args.simulate:
+        print("\n[!] WARNING: You are about to execute real exploits on the container.")
+        print("This may modify system files, overwrite binaries, or cause instability.")
+        confirm = input("Are you sure you want to continue? Type 'yes' to proceed: ")
+        if confirm.strip().lower() != "yes":
+            print("[-] Confirmation failed. Aborting execution.")
+            exit(1)
 
     if args.container:
         try:
