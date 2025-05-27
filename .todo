@@ -37,20 +37,20 @@
 - [x] **CVE-2021-3156 (sudoedit)** — optional simulated path
 
 ## 🔬 Phase 4.5: Real Exploit Enablement
-> Enable and test actual PoC payloads in safe environments for Kali submission
-
-## 🔬 Phase 4.5: Real Exploit Enablement
 > Enable full PoC execution and testable environments for Kali
 
 - [x] Add --unsafe flag with confirmation prompt
 - [x] Enforce simulate vs unsafe logic
-- [ ] Add real payload logic to:
-  - [ ] CVE-2019-5736 → overwrite /bin/sh → echo "pwned"
-- [ ] Create dev stub container for CVE-2019-5736 (LEGIT SHELL stub)
-- [ ] Add verification payload output to prove exploit worked
-- [ ] Add docker/dev_targets/ structure for reproducible testing
-- [ ] Document this workflow in README (simulate vs unsafe vs stub)
-
+- [x] Add real payload logic to:
+  - [x] CVE-2019-5736 → overwrite /bin/sh → echo "pwned"
+  - [x] Docker Socket Abuse → create privileged container `dockout-pwned`
+- [x] Create dev stub container for:
+  - [x] CVE-2019-5736
+  - [x] Docker Socket Abuse (with mounted docker.sock)
+  - [x] OverlayFS CVE → overwrite /overlayfs-test/target.txt
+  - [x] CVE-2021-3156 → sudoedit overflow pattern
+- [x] Add verification payload: `docker exec dockout-pwned cat /pwned.txt`
+- [ ] Document this in README (stub, simulate, unsafe test flow)
 
 ## 📊 Phase 5: Reporting System Implementation
 - [x] **HTML/JSON Report Generator**

