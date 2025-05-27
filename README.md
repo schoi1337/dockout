@@ -5,7 +5,6 @@ It provides a modular exploit engine, plugin-based PoC loading, and safe simulat
 
 > Use with care. All real exploits require interactive confirmation.
 
----
 
 ## 🚀 Features
 
@@ -17,12 +16,15 @@ It provides a modular exploit engine, plugin-based PoC loading, and safe simulat
 - ✅ Async architecture with asyncio
 - ✅ Built-in test containers for safe validation
 
----
 
 ## 🧠 Usage
 
 ```bash
-python3 src/core.py --attack <name> --container <target> [--simulate | --unsafe]
+# Run a specific PoC
+python3 src/core.py --attack cve-2019-5736 --container test-container --simulate
+
+# Run all PoCs and generate a report
+python3 src/core.py --auto --simulate --container test-container --report html
 ```
 
 ### CLI Options
@@ -36,7 +38,6 @@ python3 src/core.py --attack <name> --container <target> [--simulate | --unsafe]
 | `--container <name>` | Target container name (e.g., `test-container`) |
 | `--report` | Generate HTML/JSON report from recent results |
 
----
 
 ## 🔬 PoC Coverage
 
@@ -52,7 +53,6 @@ python3 src/core.py --attack <name> --container <target> [--simulate | --unsafe]
 | Writable Cgroup | `writable_cgroup.py` | notify_on_release escape path | ✅ Simulated |
 | Dirty Pipe (CVE-2022-0847) | `dirty_pipe_escalation.py` | overwrite readonly file | ✅ Simulated |
 
----
 
 ## 🧪 Simulation vs Unsafe Mode
 
@@ -60,26 +60,19 @@ python3 src/core.py --attack <name> --container <target> [--simulate | --unsafe]
 - `--unsafe`: Executes real exploit logic with full effect (requires confirmation).
 - Each PoC supports `simulate=True` and handles execution accordingly.
 
----
 
 ## 📂 Reports and Output
 
-Results are automatically saved to the `reports/` directory.
+Results are saved in the `reports/` directory:
 
 | Format | Path |
 |--------|------|
 | HTML | `reports/attack_report.html` |
 | JSON | `reports/attack_report.json` |
 
-Each report includes:
-- Execution type: `Simulated` or `Real`
-- Risk level: Low / Medium / High / Critical
-- Recommendations
-- Exploit log output
+- Includes: execution mode, risk level, recommendations, exploit logs  
+- 📊 See sample: [`docs/sample_report.html`](docs/sample_report.html)
 
-> Sample: [`docs/sample_report.html`](docs/sample_report.html)
-
----
 
 ## 🧪 Safe Testing Containers
 
@@ -88,7 +81,6 @@ For each PoC, Dockout provides optional test containers:
 - Pre-mounted targets for safe overwrite
 - Stub setups for sudoedit / docker.sock / overlayfs
 
----
 
 ## ⚠️ Ethical Use Disclaimer
 
@@ -99,7 +91,6 @@ This tool is intended for authorized testing, research, and education only.
 - Never run against systems you do not own or control
 - The author assumes no liability for misuse or damage caused by this tool
 
----
 
 ## 📜 License
 
