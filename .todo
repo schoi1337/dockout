@@ -1,4 +1,4 @@
-# Dockout Project TODO
+# 🧩 Dockout Project TODO
 
 ## 🚀 Phase 1: Core Feature Implementation
 - [x] **CVE Detection and Escape Path Execution**
@@ -9,31 +9,32 @@
   - Design basic CLI command structure: `docker-breakout --attack --report html`
   - Implement report generation functionality
 
-## 🧪 Phase 2: Feature Expansion
+## 🧪 Phase 2: Plugin Architecture and Multi-CVE Support
 - [x] **Plugin System**
   - Design plugin architecture for adding new CVEs
 - [x] **Support for Multiple CVEs**
-  - Add support for CVEs other than `CVE-2019-5736`
-  - Example: `CVE-2020-8554`, `CVE-2020-13409`
+  - Add support for CVEs other than `CVE-2019-5736` (e.g. `CVE-2020-13409`)
 - [x] **Automated Escape Attacks**
   - Scan for multiple CVEs at once and automatically attempt escape
   - Include results in the reports
 
-## ⚙️ Phase 3: Security and Efficiency Improvement
-- [x] **Parallel Processing and Speed Optimization**
-  - Add asynchronous tasks for attack speed optimization
-- [x] **Accuracy of CVE Detection**
-  - Improve detection accuracy across various Docker versions and environments
+## ⚙️ Phase 3: Security and Performance Optimization
+- [x] **Parallel Execution**
+  - Add asynchronous task support to improve CVE scanning speed
+- [x] **Environment-Aware Execution**
+  - Check Docker version/runc/security config before executing attack
+  - Add `is_vulnerable()` logic to CVE modules
 
-## 📊 Phase 4: Final Refining and Release Preparation
-- [ ] **Deployment Preparation**
-  - Test and optimize the tool on security distributions like Kali Linux
-  - Release on GitHub with detailed usage documentation
-- [ ] **Security Enhancements**
-  - Ensure stable execution and security of the tool in Docker environments
-  - Analyze and patch any vulnerabilities in the tool itself
+## 🔬 Phase 4: PoC Expansion and Target Diversity
+- [x] **Add More Docker Escape Techniques**
+  - Implement CVE-2020-15257: privileged container + procfs injection
+  - Implement writable cgroup escape PoC
+- [ ] **Integrate Privilege Escalation Techniques**
+  - Add optional post-escape escalation modules (e.g. dirty pipe, overlayfs)
+- [ ] **Simulated Environment Support**
+  - Add support for testing against mock/test containers with known vulnerable setups
 
-## 🛠 Phase 5: Reporting System Implementation
+## 📊 Phase 5: Reporting System Implementation
 - [x] **Reporting System Design**
   - Implement HTML and JSON report generation systems
   - Include attack scenario, risk levels, and suggested remediation
@@ -43,10 +44,14 @@
   - Ensure HTML reports are visually appealing and easy to interpret
   - Design JSON reports for easy integration with automated systems
 
-## 🏁 Phase 6: Post-Release Improvements and Community Contributions
+## 🏁 Phase 6: Final Release and Community Contribution
+- [ ] **Deployment Preparation**
+  - Test and optimize the tool on security distributions like Kali Linux
+  - Release on GitHub with detailed usage documentation
+- [ ] **Security Enhancements**
+  - Ensure stable execution and security of the tool in Docker environments
+  - Analyze and patch any vulnerabilities in the tool itself
 - [ ] **GitHub Release and Community Feedback**
   - Publish the repository on GitHub and incorporate external feedback
-- [ ] **Feature Updates and Bug Fixes**
-  - Improve the tool based on user feedback and fix bugs
 - [ ] **Kali Linux Inclusion Request**
   - Request official inclusion in Kali Linux repositories
