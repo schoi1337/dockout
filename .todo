@@ -29,7 +29,7 @@
 - [x] **Add More Docker Escape Techniques**
   - Implement CVE-2020-15257: privileged container + procfs injection
   - Implement writable cgroup escape PoC
-- [ ] **Integrate Privilege Escalation Techniques**
+- [x] **Integrate Privilege Escalation Techniques**
   - Add optional post-escape escalation modules (e.g. dirty pipe, overlayfs)
 - [ ] **Simulated Environment Support**
   - Add support for testing against mock/test containers with known vulnerable setups
