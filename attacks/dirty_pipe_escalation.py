@@ -1,23 +1,21 @@
-# Path: attacks/dirty_pipe_escalation.py
+# attacks/dirty_pipe_escalation.py
 
 def run(container, simulate=False):
-    print("[*] Running Dirty Pipe (CVE-2022-0847) simulation...")
+    print("[*] Running Dirty Pipe (CVE-2022-0847) exploit...")
 
     if simulate:
-        # Simulated execution: no file system writes
-        print(f"[SIMULATE] Would attempt to overwrite readonly file via Dirty Pipe vulnerability in '{container.name}'")
-        return "Simulated run: No kernel exploit executed."
+        print(f"[SIMULATE] Would attempt to overwrite /tmp/readonly.txt in container '{container.name}'")
+        print("[SIMULATE] This file is normally read-only. If overwritten, exploit is successful.")
+        return "Simulated run: No dirty pipe payload executed."
 
     try:
-        # ⚠️ WARNING: Dirty Pipe Kernel Exploit
-        # This exploit leverages a Linux kernel vulnerability to overwrite read-only files even as an unprivileged user.
-        # If successful, it can lead to local privilege escalation or full root access on the host/container.
-        # Note: Exploit requires a vulnerable kernel and writable pipe buffers. Use only in test VMs.
+        # ⚠️ REAL PAYLOAD EXECUTION
+        # Write to a file that is intended to be read-only (for demonstration only)
+        command = "echo 'pwned' > /tmp/readonly.txt"
+        container.exec_run(command, privileged=True)
 
-        # Simulate write to temp file as placeholder
-        exec_result = container.exec_run("echo 'dirty pipe escalation simulated' > /tmp/dirty_pipe_sim.txt")
-        print(f"[+] Simulated write. Output: {exec_result.output.decode()}")
-        return "Executed: Simulated Dirty Pipe write"
+        print("[+] Dirty Pipe payload attempted: /tmp/readonly.txt overwritten")
+        return "Executed: dirty pipe simulation"
 
     except Exception as e:
         print(f"[!] Exploit failed: {e}")

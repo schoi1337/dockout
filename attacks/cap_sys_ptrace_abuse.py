@@ -1,24 +1,20 @@
-# Path: attacks/cap_sys_ptrace_abuse.py
+# attacks/cap_sys_ptrace_abuse.py
 
 def run(container, simulate=False):
-    print("[*] Running CAP_SYS_PTRACE Abuse simulation...")
+    print("[*] Running CAP_SYS_PTRACE Abuse...")
 
     if simulate:
-        # Simulated execution: no process attachment
-        print(f"[SIMULATE] Would attempt to ptrace a host process from container '{container.name}'")
-        print("[SIMULATE] If CAP_SYS_PTRACE is enabled and PID namespace is shared, attacker could read or modify host process memory.")
-        return "Simulated run: No ptrace or memory access performed."
+        print(f"[SIMULATE] Would attempt to strace PID 1 inside container '{container.name}'")
+        return "Simulated run: No ptrace attempted."
 
     try:
-        # ⚠️ WARNING: CAP_SYS_PTRACE Container Escape
-        # This capability allows attaching to and inspecting/modifying other processes.
-        # If the container shares PID namespace with the host, this can lead to host process hijacking.
-        # Note: Should only be attempted in isolated labs.
+        # ⚠️ REAL PAYLOAD EXECUTION
+        # Attach strace to PID 1 (init process)
+        command = "strace -p 1 -o /tmp/ptrace_log.txt -e trace=execve -f -tt & sleep 1"
+        container.exec_run(command, privileged=True)
 
-        command = "strace -p 1"
-        exec_result = container.exec_run(command, privileged=True)
-        print(f"[+] strace output: {exec_result.output.decode()}")
-        return "Executed: Attached to process via ptrace"
+        print("[+] strace attempted on PID 1. Output logged to /tmp/ptrace_log.txt")
+        return "Executed: strace on PID 1"
 
     except Exception as e:
         print(f"[!] Exploit failed: {e}")

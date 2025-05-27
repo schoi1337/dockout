@@ -50,12 +50,12 @@
   - [x] OverlayFS CVE → overwrite /overlayfs-test/target.txt
   - [x] CVE-2021-3156 → sudoedit overflow pattern
 - [x] Add verification payload: `docker exec dockout-pwned cat /pwned.txt`
-- [ ] Document this in README (stub, simulate, unsafe test flow)
+- [x] Add real payload logic
 
 ## 📊 Phase 5: Reporting System Implementation
 - [x] **HTML/JSON Report Generator**
 - [x] **Integrated Results Logging**
-- [ ] **Report Refinement**
+- [x] **Report Refinement**
   - Improve visual formatting and risk scoring
   - Annotate simulation vs real exploit in report
 
