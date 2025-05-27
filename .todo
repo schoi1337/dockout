@@ -39,17 +39,18 @@
 ## 🔬 Phase 4.5: Real Exploit Enablement
 > Enable and test actual PoC payloads in safe environments for Kali submission
 
-- [x] Add --unsafe flag to core CLI for real exploit execution
-- [x] Enforce mutual exclusivity between --simulate and --unsafe
-- [x] Add confirmation prompt before unsafe execution
+## 🔬 Phase 4.5: Real Exploit Enablement
+> Enable full PoC execution and testable environments for Kali
+
+- [x] Add --unsafe flag with confirmation prompt
+- [x] Enforce simulate vs unsafe logic
 - [ ] Add real payload logic to:
-  - [ ] CVE-2019-5736
-  - [ ] CVE-2020-15257
-  - [ ] Writable Cgroup Escape
-  - [ ] Docker Socket Abuse
-  - [ ] OverlayFS CVE
-- [ ] Manually test each real PoC in isolated Kali VM before submission
-- [ ] Log clearly when simulate=False triggers real effect
+  - [ ] CVE-2019-5736 → overwrite /bin/sh → echo "pwned"
+- [ ] Create dev stub container for CVE-2019-5736 (LEGIT SHELL stub)
+- [ ] Add verification payload output to prove exploit worked
+- [ ] Add docker/dev_targets/ structure for reproducible testing
+- [ ] Document this workflow in README (simulate vs unsafe vs stub)
+
 
 ## 📊 Phase 5: Reporting System Implementation
 - [x] **HTML/JSON Report Generator**
