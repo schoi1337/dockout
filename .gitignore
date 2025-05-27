@@ -47,3 +47,6 @@ pytest_cache/
 
 # User-specific files
 file-structure.md
+
+# Ignore the reports directory containing generated reports
+reports/

@@ -5,7 +5,7 @@
   - Test Docker breakout using `CVE-2019-5736`
   - Leverage CVE to establish connection with Docker host
   - Conduct escape test and generate HTML/JSON reports
-- [ ] **CLI Interface Design**
+- [x] **CLI Interface Design**
   - Design basic CLI command structure: `docker-breakout --attack --report html`
   - Implement report generation functionality
 
