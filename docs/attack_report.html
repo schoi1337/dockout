@@ -1,0 +1,61 @@
+
+    <html>
+    <head><title>Dockout Report</title>
+    <style>
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    .simulate { background-color: #eef; }
+    .real { background-color: #fee; }
+    </style>
+    </head>
+    <body>
+        <h1>Dockout Exploit Report</h1>
+        <table>
+            <tr>
+                <th>CVE</th><th>Result</th><th>Mode</th><th>Risk Level</th><th>Recommendation</th>
+            </tr>
+            
+            <tr class="real">
+                <td>CVE-2019-5736</td>
+                <td>Simulated run: no actual overwrite performed.</td>
+                <td>real</td>
+                <td>High</td>
+                <td>Rebuild container with read-only FS.</td>
+            </tr>
+            
+            <tr class="real">
+                <td>DOCKER-SOCKET-ABUSE</td>
+                <td>Simulated run: No container created.</td>
+                <td>real</td>
+                <td>Critical</td>
+                <td>Never mount docker.sock into containers.</td>
+            </tr>
+            
+            <tr class="real">
+                <td>CVE-2020-15257</td>
+                <td>Simulated run: No changes made.</td>
+                <td>real</td>
+                <td>High</td>
+                <td>Avoid privileged containers.</td>
+            </tr>
+            
+            <tr class="real">
+                <td>CVE-2020-13409</td>
+                <td>Simulated run: No socket mount attempted.</td>
+                <td>real</td>
+                <td>Unknown</td>
+                <td>No recommendation.</td>
+            </tr>
+            
+            <tr class="real">
+                <td>CAP-ABUSE</td>
+                <td>Simulated run: No ptrace attempted.</td>
+                <td>real</td>
+                <td>Unknown</td>
+                <td>No recommendation.</td>
+            </tr>
+            
+        </table>
+    </body>
+    </html>
+    

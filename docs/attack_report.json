@@ -1,0 +1,37 @@
+{
+    "DOCKER-SOCKET-ABUSE": {
+        "cve_id": "DOCKER-SOCKET-ABUSE",
+        "result": "Simulated run: No container created.",
+        "mode": "real",
+        "risk_level": "Critical",
+        "recommendation": "Never mount docker.sock into containers."
+    },
+    "CAP-ABUSE": {
+        "cve_id": "CAP-ABUSE",
+        "result": "Simulated run: No ptrace attempted.",
+        "mode": "real",
+        "risk_level": "Unknown",
+        "recommendation": "No recommendation."
+    },
+    "CVE-2020-13409": {
+        "cve_id": "CVE-2020-13409",
+        "result": "Simulated run: No socket mount attempted.",
+        "mode": "real",
+        "risk_level": "Unknown",
+        "recommendation": "No recommendation."
+    },
+    "CVE-2019-5736": {
+        "cve_id": "CVE-2019-5736",
+        "result": "Simulated run: no actual overwrite performed.",
+        "mode": "real",
+        "risk_level": "High",
+        "recommendation": "Rebuild container with read-only FS."
+    },
+    "CVE-2020-15257": {
+        "cve_id": "CVE-2020-15257",
+        "result": "Simulated run: No changes made.",
+        "mode": "real",
+        "risk_level": "High",
+        "recommendation": "Avoid privileged containers."
+    }
+}
