@@ -1,0 +1,49 @@
+# macOS specific files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows specific files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Python virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Python bytecode files
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.log
+
+# IDEs and editor config files
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Test coverage and environment cache
+.coverage
+coverage.xml
+htmlcov/
+pytest_cache/
+.tox/
+.cache/
+
+# Windows-specific files
+*.bak
+*.swp
+
+# User-specific files
+file-structure.md
