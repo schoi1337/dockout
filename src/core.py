@@ -1,3 +1,5 @@
+# src/core.py
+
 import argparse
 import asyncio
 import os
@@ -28,9 +30,10 @@ def parse_args():
     parser.add_argument('--auto', action='store_true', help='Automatically run all known CVE modules')
     parser.add_argument('--container', type=str, help='Specify the container name or ID')
     parser.add_argument('--report', choices=['html', 'json'], help='Generate report in specified format')
+    parser.add_argument('--simulate', action='store_true', help='Simulate the exploit without executing real changes')
     return parser.parse_args()
 
-async def async_run_module_with_env(module, container, cve_id, env_info, semaphore):
+async def async_run_module_with_env(module, container, cve_id, env_info, semaphore, simulate):
     # Run a single attack module with environment-aware vulnerability check
     async with semaphore:
         loop = asyncio.get_event_loop()
@@ -40,11 +43,11 @@ async def async_run_module_with_env(module, container, cve_id, env_info, semapho
                 if not module.is_vulnerable(env_info):
                     print(f"[!] {cve_id} skipped: not vulnerable under current environment.")
                     return (cve_id, "Skipped (not vulnerable)")
-            return (cve_id, module.run(container))
+            return (cve_id, module.run(container, simulate=simulate))  # Pass simulate flag
 
         return await loop.run_in_executor(None, _exec)
 
-async def run_all_attacks_async(container):
+async def run_all_attacks_async(container, simulate):
     # Run all CVE modules concurrently (with environment check)
     results = {}
     env_info = get_docker_info()
@@ -57,7 +60,7 @@ async def run_all_attacks_async(container):
             cve_id = fname.replace('.py', '').upper().replace('_', '-')
             module = load_attack_module(cve_id)
             if module and hasattr(module, 'run'):
-                tasks.append(async_run_module_with_env(module, container, cve_id, env_info, semaphore))
+                tasks.append(async_run_module_with_env(module, container, cve_id, env_info, semaphore, simulate))
             else:
                 results[cve_id] = "Module invalid or missing run()"
 
@@ -81,16 +84,14 @@ if __name__ == "__main__":
         exit(1)
 
     if args.auto:
-        # Run all CVEs asynchronously
-        results = asyncio.run(run_all_attacks_async(container))
+        results = asyncio.run(run_all_attacks_async(container, simulate=args.simulate))
         if args.report:
             generate_reports(results, args.report)
 
     elif args.attack:
-        # Run a specific CVE module
         module = load_attack_module(args.attack)
         if module and hasattr(module, 'run'):
-            result = module.run(container)
+            result = module.run(container, simulate=args.simulate)
             if args.report:
                 generate_reports({args.attack: result}, args.report)
         else:

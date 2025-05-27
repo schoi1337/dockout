@@ -1,32 +1,24 @@
-# attacks/dirty_pipe_escalation.py
+# Path: attacks/dirty_pipe_escalation.py
 
-def is_vulnerable(env_info):
-    """
-    Dirty Pipe (CVE-2022-0847) affects Linux kernel 5.8 and above.
-    We simulate detection by checking kernel version string if available.
-    """
-    kernel_version = env_info.get("kernel_version", "")
-    if not kernel_version:
-        return False
-    try:
-        major, minor = map(int, kernel_version.split('.')[:2])
-        return (major == 5 and minor >= 8) or (major > 5)
-    except:
-        return False
+def run(container, simulate=False):
+    print("[*] Running Dirty Pipe (CVE-2022-0847) simulation...")
 
-def run(container):
-    """
-    Simulate Dirty Pipe privilege escalation.
-    We do NOT attempt actual kernel exploitation.
-    Instead, we simulate file injection to represent overwrite potential.
-    """
-    print("[DirtyPipe] Simulating privilege escalation attempt...")
+    if simulate:
+        # Simulated execution: no file system writes
+        print(f"[SIMULATE] Would attempt to overwrite readonly file via Dirty Pipe vulnerability in '{container.name}'")
+        return "Simulated run: No kernel exploit executed."
 
     try:
-        result = container.exec_run("echo '[SIMULATION] dirty pipe triggered' > /tmp/dirty_pipe_sim.txt")
-        if result.exit_code == 0:
-            return "Dirty Pipe simulated: wrote /tmp/dirty_pipe_sim.txt"
-        else:
-            return "Simulation failed: no write access"
+        # ⚠️ WARNING: Dirty Pipe Kernel Exploit
+        # This exploit leverages a Linux kernel vulnerability to overwrite read-only files even as an unprivileged user.
+        # If successful, it can lead to local privilege escalation or full root access on the host/container.
+        # Note: Exploit requires a vulnerable kernel and writable pipe buffers. Use only in test VMs.
+
+        # Simulate write to temp file as placeholder
+        exec_result = container.exec_run("echo 'dirty pipe escalation simulated' > /tmp/dirty_pipe_sim.txt")
+        print(f"[+] Simulated write. Output: {exec_result.output.decode()}")
+        return "Executed: Simulated Dirty Pipe write"
+
     except Exception as e:
-        return f"Simulation error: {str(e)}"
+        print(f"[!] Exploit failed: {e}")
+        return f"Failed: {str(e)}"

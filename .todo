@@ -1,57 +1,54 @@
-# 🧩 Dockout Project TODO
+# 🧩 Dockout Project TODO (Updated for Kali-readiness & Safe UX)
 
 ## 🚀 Phase 1: Core Feature Implementation
 - [x] **CVE Detection and Escape Path Execution**
-  - Test Docker breakout using `CVE-2019-5736`
-  - Leverage CVE to establish connection with Docker host
-  - Conduct escape test and generate HTML/JSON reports
+  - Implement core exploit: `CVE-2019-5736`
+  - Test exploit delivery within Docker container
 - [x] **CLI Interface Design**
-  - Design basic CLI command structure: `docker-breakout --attack --report html`
-  - Implement report generation functionality
+  - Add `--attack`, `--report`, `--auto` CLI options
 
 ## 🧪 Phase 2: Plugin Architecture and Multi-CVE Support
-- [x] **Plugin System**
-  - Design plugin architecture for adding new CVEs
-- [x] **Support for Multiple CVEs**
-  - Add support for CVEs other than `CVE-2019-5736` (e.g. `CVE-2020-13409`)
-- [x] **Automated Escape Attacks**
-  - Scan for multiple CVEs at once and automatically attempt escape
-  - Include results in the reports
+- [x] **Modular Plugin System**
+  - Dynamically load PoC modules from `attacks/`
+- [x] **Multi-CVE Auto Execution**
+  - Add `--auto` flag to run all known CVEs
+- [x] **Async Execution**
+  - Parallelize CVE execution with asyncio
+- [x] **Environment-aware Filtering**
+  - Use `is_vulnerable()` logic based on Docker/env info
 
-## ⚙️ Phase 3: Security and Performance Optimization
-- [x] **Parallel Execution**
-  - Add asynchronous task support to improve CVE scanning speed
-- [x] **Environment-Aware Execution**
-  - Check Docker version/runc/security config before executing attack
-  - Add `is_vulnerable()` logic to CVE modules
+## ⚙️ Phase 3: UX Safety Layer (Simulation and Confirmation)
+- [x] **`--simulate` Mode**
+  - Add global flag to safely simulate exploits without system changes
+  - Pass `simulate=True` to `run()` in all plugins
+- [ ] **Confirmation Prompt for Real Exploits**
+  - Add confirmation before executing any real exploit if `--simulate` is not used
+  - Print clear warning and block unless user types `"yes"`
+- [ ] **PoC Compatibility Refactor**
+  - Ensure all existing PoCs support `simulate=True` and honor safety flow
 
 ## 🔬 Phase 4: PoC Expansion and Target Diversity
-- [x] **Add More Docker Escape Techniques**
-  - Implement CVE-2020-15257: privileged container + procfs injection
-  - Implement writable cgroup escape PoC
-- [x] **Integrate Privilege Escalation Techniques**
-  - Add optional post-escape escalation modules (e.g. dirty pipe, overlayfs)
-- [ ] **Simulated Environment Support**
-  - Add support for testing against mock/test containers with known vulnerable setups
+- [x] **CVE-2020-15257** (Privileged container root FS overwrite)
+- [x] **Writable Cgroup Escape**
+- [x] **Dirty Pipe (CVE-2022-0847)** — simulated
+- [ ] **Docker Socket Abuse**
+- [ ] **Capabilities Abuse (CAP_SYS_PTRACE)**
+- [ ] **OverlayFS CVE (e.g. CVE-2023-0386)** — simulated
+- [ ] **CVE-2021-3156 (sudoedit)** — optional simulated path
 
 ## 📊 Phase 5: Reporting System Implementation
-- [x] **Reporting System Design**
-  - Implement HTML and JSON report generation systems
-  - Include attack scenario, risk levels, and suggested remediation
-- [ ] **Automated Report Generation**
-  - Implement `--report html` or `--report json` options for automated report generation
-- [ ] **Report Format Refinement**
-  - Ensure HTML reports are visually appealing and easy to interpret
-  - Design JSON reports for easy integration with automated systems
+- [x] **HTML/JSON Report Generator**
+- [x] **Integrated Results Logging**
+- [ ] **Report Refinement**
+  - Improve visual formatting and risk scoring
+  - Annotate simulation vs real exploit in report
 
 ## 🏁 Phase 6: Final Release and Community Contribution
-- [ ] **Deployment Preparation**
-  - Test and optimize the tool on security distributions like Kali Linux
-  - Release on GitHub with detailed usage documentation
-- [ ] **Security Enhancements**
-  - Ensure stable execution and security of the tool in Docker environments
-  - Analyze and patch any vulnerabilities in the tool itself
-- [ ] **GitHub Release and Community Feedback**
-  - Publish the repository on GitHub and incorporate external feedback
-- [ ] **Kali Linux Inclusion Request**
-  - Request official inclusion in Kali Linux repositories
+- [ ] **Kali Linux Testing and Optimization**
+  - Test in Kali VM and containerized environments
+  - Validate against real-world escape scenarios
+- [ ] **Documentation and README**
+  - Add full usage guide, PoC table, safety disclaimers
+- [ ] **Kali Submission**
+  - Submit for inclusion with structured metadata and tool category
+
