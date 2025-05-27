@@ -15,7 +15,7 @@
 - [x] **Support for Multiple CVEs**
   - Add support for CVEs other than `CVE-2019-5736`
   - Example: `CVE-2020-8554`, `CVE-2020-13409`
-- [ ] **Automated Escape Attacks**
+- [x] **Automated Escape Attacks**
   - Scan for multiple CVEs at once and automatically attempt escape
   - Include results in the reports
 
