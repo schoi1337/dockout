@@ -1,10 +1,12 @@
 import argparse
+import asyncio
+import os
 import docker
 from report_generator import generate_html_report, generate_json_report
 from plugin_loader import load_attack_module
-import os
 
 client = docker.from_env()
+MAX_PARALLEL_TASKS = 5  # Limit for simultaneous CVE executions
 
 def list_containers():
     containers = client.containers.list(all=True)
@@ -25,19 +27,30 @@ def parse_args():
     parser.add_argument('--report', choices=['html', 'json'], help='Generate report in specified format')
     return parser.parse_args()
 
-def run_all_attacks(container):
+async def async_run_module(module, container, cve_id, semaphore):
+    async with semaphore:
+        loop = asyncio.get_event_loop()
+        return await loop.run_in_executor(None, lambda: (cve_id, module.run(container)))
+
+async def run_all_attacks_async(container):
     results = {}
     attack_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'attacks'))
+    semaphore = asyncio.Semaphore(MAX_PARALLEL_TASKS)
+    tasks = []
+
     for fname in os.listdir(attack_dir):
         if fname.startswith('cve_') and fname.endswith('.py'):
             cve_id = fname.replace('.py', '').upper().replace('_', '-')
             module = load_attack_module(cve_id)
             if module and hasattr(module, 'run'):
-                print(f"[+] Running {cve_id}...")
-                result = module.run(container)
-                results[cve_id] = result
+                tasks.append(async_run_module(module, container, cve_id, semaphore))
             else:
                 results[cve_id] = "Module invalid or missing run()"
+
+    for coro in asyncio.as_completed(tasks):
+        cve_id, result = await coro
+        results[cve_id] = result
+
     return results
 
 if __name__ == "__main__":
@@ -54,9 +67,10 @@ if __name__ == "__main__":
         exit(1)
 
     if args.auto:
-        results = run_all_attacks(container)
+        results = asyncio.run(run_all_attacks_async(container))
         if args.report:
             generate_reports(results, args.report)
+
     elif args.attack:
         module = load_attack_module(args.attack)
         if module and hasattr(module, 'run'):
