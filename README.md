@@ -72,7 +72,7 @@ Results are saved in the `reports/` directory:
 | JSON | `reports/attack_report.json` |
 
 - Includes: execution mode, risk level, recommendations, exploit logs  
-- 📊 See sample: [`docs/sample_report.html`](docs/sample_report.html)
+- 📊 See sample: [`docs/sample_report.html`](docs/attack_report.html)
 
 
 ## 🧪 Safe Testing Containers
