@@ -1,15 +1,16 @@
-# docker/dev_targets/cve_2019_5736/Dockerfile
+# Path: docker/dev_targets/cve_2019_5736/Dockerfile
 
 FROM ubuntu:20.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
+# Install basic tools
 RUN apt update && apt install -y bash coreutils curl
 
-# Create original shell that outputs "LEGIT SHELL"
-RUN echo -e '#!/bin/bash\necho "LEGIT SHELL"' > /tmp/original_shell.sh && chmod +x /tmp/original_shell.sh
+# 공격 전 확인용 파일
+RUN echo "LEGIT SHELL" > /LEGIT_MARKER
 
-# Replace /bin/sh with symbolic link to controlled shell
-RUN ln -sf /tmp/original_shell.sh /bin/sh
+# 기본적으로 /bin/sh는 bash 바이너리 그대로 유지
+# 나중에 공격 시 PoC에서 /bin/sh → /tmp/pwned_shell.sh 로 overwrite 함
 
 CMD ["bash"]
