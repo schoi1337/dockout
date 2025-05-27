@@ -36,28 +36,33 @@
 - [x] **OverlayFS CVE (e.g. CVE-2023-0386)** — simulated
 - [x] **CVE-2021-3156 (sudoedit)** — optional simulated path
 
-## 🔬 Phase 4.5: Real Exploit Enablement
-> Enable full PoC execution and testable environments for Kali
-
-- [x] Add --unsafe flag with confirmation prompt
-- [x] Enforce simulate vs unsafe logic
-- [x] Add real payload logic to:
-  - [x] CVE-2019-5736 → overwrite /bin/sh → echo "pwned"
-  - [x] Docker Socket Abuse → create privileged container `dockout-pwned`
-- [x] Create dev stub container for:
-  - [x] CVE-2019-5736
-  - [x] Docker Socket Abuse (with mounted docker.sock)
-  - [x] OverlayFS CVE → overwrite /overlayfs-test/target.txt
-  - [x] CVE-2021-3156 → sudoedit overflow pattern
-- [x] Add verification payload: `docker exec dockout-pwned cat /pwned.txt`
-- [x] Add real payload logic
+## 🧨 Phase 4.5: Real Exploit Enablement
+- [x] Add --unsafe flag and simulate/unsafe confirmation logic to CLI
+- [x] CVE-2019-5736 → overwrite /bin/sh → pwned shell
+- [x] Docker Socket Abuse → create container `dockout-pwned`
+- [x] OverlayFS Exploit → overwrite /overlayfs-test/target.txt
+- [x] CVE-2021-3156 → sudoedit overflow args, log result
+- [x] CVE-2020-15257 → write /root/pwned_by_15257.txt
+- [x] Writable Cgroup Escape → write '1' to notify_on_release
+- [x] CAP_SYS_PTRACE Abuse → log strace output to /tmp/ptrace_log.txt
+- [x] Dirty Pipe Escalation → overwrite /tmp/readonly.txt
+- [x] Stub container for CVE-2019-5736 (LEGIT SHELL → pwned shell)
+- [x] Stub container for Docker Socket Abuse (with docker.sock mount)
+- [x] Stub container for OverlayFS (readonly target file)
+- [x] Stub container for CVE-2021-3156 (with sudoedit & testuser)
+- [x] (Optional) Stub for Dirty Pipe — readonly file overwrite test
+- [x] All real payloads write observable output: files, logs, containers
 
 ## 📊 Phase 5: Reporting System Implementation
 - [x] **HTML/JSON Report Generator**
+  - Generate reports to `reports/attack_report.html` and `.json`
 - [x] **Integrated Results Logging**
+  - Store result per PoC ID with human-readable output
 - [x] **Report Refinement**
-  - Improve visual formatting and risk scoring
-  - Annotate simulation vs real exploit in report
+  - [x] Improve visual formatting with HTML table
+  - [x] Annotate simulation vs real exploit in report
+  - [x] Add risk level per PoC: Low / Medium / High / Critical
+  - [x] Add recommendation field per PoC for remediation
 
 ## 🏁 Phase 6: Final Release and Community Contribution
 - [ ] **Kali Linux Testing and Optimization**
