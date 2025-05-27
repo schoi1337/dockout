@@ -31,6 +31,7 @@ def parse_args():
     parser.add_argument('--container', type=str, help='Specify the container name or ID')
     parser.add_argument('--report', choices=['html', 'json'], help='Generate report in specified format')
     parser.add_argument('--simulate', action='store_true', help='Simulate the exploit without executing real changes')
+    parser.add_argument('--unsafe', action='store_true', help='Actually execute real exploits (DANGEROUS)')
     return parser.parse_args()
 
 async def async_run_module_with_env(module, container, cve_id, env_info, semaphore, simulate):
@@ -56,7 +57,7 @@ async def run_all_attacks_async(container, simulate):
     tasks = []
 
     for fname in os.listdir(attack_dir):
-        if fname.startswith('cve_') and fname.endswith('.py'):
+        if fname.startswith('cve_') or fname.endswith('_abuse.py') or fname.endswith('_exploit.py'):
             cve_id = fname.replace('.py', '').upper().replace('_', '-')
             module = load_attack_module(cve_id)
             if module and hasattr(module, 'run'):
@@ -73,8 +74,16 @@ async def run_all_attacks_async(container, simulate):
 if __name__ == "__main__":
     args = parse_args()
 
-    if not args.simulate:
-        print("\n[!] WARNING: You are about to execute real exploits on the container.")
+    # Ensure mutually exclusive simulate and unsafe flags
+    if args.simulate and args.unsafe:
+        print("[-] You cannot use both --simulate and --unsafe at the same time.")
+        exit(1)
+
+    # Default to simulate unless --unsafe is explicitly used
+    simulate = not args.unsafe
+
+    if not simulate:
+        print("\n[!] WARNING: You are about to execute REAL exploits on the container.")
         print("This may modify system files, overwrite binaries, or cause instability.")
         confirm = input("Are you sure you want to continue? Type 'yes' to proceed: ")
         if confirm.strip().lower() != "yes":
@@ -92,14 +101,14 @@ if __name__ == "__main__":
         exit(1)
 
     if args.auto:
-        results = asyncio.run(run_all_attacks_async(container, simulate=args.simulate))
+        results = asyncio.run(run_all_attacks_async(container, simulate=simulate))
         if args.report:
             generate_reports(results, args.report)
 
     elif args.attack:
         module = load_attack_module(args.attack)
         if module and hasattr(module, 'run'):
-            result = module.run(container, simulate=args.simulate)
+            result = module.run(container, simulate=simulate)
             if args.report:
                 generate_reports({args.attack: result}, args.report)
         else:
