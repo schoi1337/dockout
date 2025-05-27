@@ -31,10 +31,10 @@
 - [x] **CVE-2020-15257** (Privileged container root FS overwrite)
 - [x] **Writable Cgroup Escape**
 - [x] **Dirty Pipe (CVE-2022-0847)** — simulated
-- [ ] **Docker Socket Abuse**
-- [ ] **Capabilities Abuse (CAP_SYS_PTRACE)**
-- [ ] **OverlayFS CVE (e.g. CVE-2023-0386)** — simulated
-- [ ] **CVE-2021-3156 (sudoedit)** — optional simulated path
+- [x] **Docker Socket Abuse**
+- [x] **Capabilities Abuse (CAP_SYS_PTRACE)**
+- [x] **OverlayFS CVE (e.g. CVE-2023-0386)** — simulated
+- [x] **CVE-2021-3156 (sudoedit)** — optional simulated path
 
 ## 📊 Phase 5: Reporting System Implementation
 - [x] **HTML/JSON Report Generator**
