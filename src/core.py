@@ -4,9 +4,10 @@ import os
 import docker
 from report_generator import generate_html_report, generate_json_report
 from plugin_loader import load_attack_module
+from env_check import get_docker_info
 
 client = docker.from_env()
-MAX_PARALLEL_TASKS = 5  # Limit for simultaneous CVE executions
+MAX_PARALLEL_TASKS = 5  # Maximum number of concurrent CVE executions
 
 def list_containers():
     containers = client.containers.list(all=True)
@@ -14,12 +15,14 @@ def list_containers():
         print(f"Container {container.id} - {container.name} - Status: {container.status}")
 
 def generate_reports(results_dict, report_type):
+    # Generate report in the specified format
     if report_type == 'html':
         generate_html_report(results_dict)
     elif report_type == 'json':
         generate_json_report(results_dict)
 
 def parse_args():
+    # Parse CLI arguments
     parser = argparse.ArgumentParser(description='CVE Detection and Docker Breakout Tool')
     parser.add_argument('--attack', type=str, help='Specify CVE ID to run, e.g. CVE-2019-5736')
     parser.add_argument('--auto', action='store_true', help='Automatically run all known CVE modules')
@@ -27,13 +30,24 @@ def parse_args():
     parser.add_argument('--report', choices=['html', 'json'], help='Generate report in specified format')
     return parser.parse_args()
 
-async def async_run_module(module, container, cve_id, semaphore):
+async def async_run_module_with_env(module, container, cve_id, env_info, semaphore):
+    # Run a single attack module with environment-aware vulnerability check
     async with semaphore:
         loop = asyncio.get_event_loop()
-        return await loop.run_in_executor(None, lambda: (cve_id, module.run(container)))
+
+        def _exec():
+            if hasattr(module, "is_vulnerable"):
+                if not module.is_vulnerable(env_info):
+                    print(f"[!] {cve_id} skipped: not vulnerable under current environment.")
+                    return (cve_id, "Skipped (not vulnerable)")
+            return (cve_id, module.run(container))
+
+        return await loop.run_in_executor(None, _exec)
 
 async def run_all_attacks_async(container):
+    # Run all CVE modules concurrently (with environment check)
     results = {}
+    env_info = get_docker_info()
     attack_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'attacks'))
     semaphore = asyncio.Semaphore(MAX_PARALLEL_TASKS)
     tasks = []
@@ -43,7 +57,7 @@ async def run_all_attacks_async(container):
             cve_id = fname.replace('.py', '').upper().replace('_', '-')
             module = load_attack_module(cve_id)
             if module and hasattr(module, 'run'):
-                tasks.append(async_run_module(module, container, cve_id, semaphore))
+                tasks.append(async_run_module_with_env(module, container, cve_id, env_info, semaphore))
             else:
                 results[cve_id] = "Module invalid or missing run()"
 
@@ -67,11 +81,13 @@ if __name__ == "__main__":
         exit(1)
 
     if args.auto:
+        # Run all CVEs asynchronously
         results = asyncio.run(run_all_attacks_async(container))
         if args.report:
             generate_reports(results, args.report)
 
     elif args.attack:
+        # Run a specific CVE module
         module = load_attack_module(args.attack)
         if module and hasattr(module, 'run'):
             result = module.run(container)

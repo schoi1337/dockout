@@ -22,7 +22,7 @@
 ## ⚙️ Phase 3: Security and Efficiency Improvement
 - [x] **Parallel Processing and Speed Optimization**
   - Add asynchronous tasks for attack speed optimization
-- [ ] **Accuracy of CVE Detection**
+- [x] **Accuracy of CVE Detection**
   - Improve detection accuracy across various Docker versions and environments
 
 ## 📊 Phase 4: Final Refining and Release Preparation
