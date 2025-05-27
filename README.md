@@ -1,9 +1,10 @@
-# 🐳 Dockout — Container Escape Exploit Automation Framework
+# 🐳 Dockout · v1.0.0
+![Release](https://img.shields.io/github/v/release/schoi1337/dockout?style=flat-square)
 
 Dockout is a red-team focused tool that automates detection and exploitation of container escape paths.  
 It provides a modular exploit engine, plugin-based PoC loading, and safe simulation mode — supporting both known CVEs and Docker misconfigurations.
 
-> Use with care. All real exploits require interactive confirmation.
+> ⚠️ Real exploit modules require explicit user confirmation and are gated behind a safety prompt. Use only in controlled environments with appropriate authorization.
 
 
 ## 🚀 Features
