@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Dockout
+Comment=Automated Docker Escape Exploitation Framework
+Exec=python3 /opt/dockout/src/core.py --simulate --container demo-container
+Icon=/opt/dockout/icon.png
+Terminal=true
+Type=Application
+Categories=04-exploitation;
