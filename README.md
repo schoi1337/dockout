@@ -39,6 +39,9 @@ python3 src/core.py --auto --simulate --container test-container --report html
 | `--container <name>` | Target container name (e.g., `test-container`) |
 | `--report` | Generate HTML/JSON report from recent results |
 
+## 🎥 Demo
+
+![Demo](docs/demo.gif)
 
 ## 🔬 PoC Coverage
 
