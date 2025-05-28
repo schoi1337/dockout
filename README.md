@@ -42,18 +42,17 @@ python3 src/core.py --auto --simulate --container test-container --report html
 
 ## 🔬 PoC Coverage
 
-| Technique / CVE | File | Description | Status |
-|-----------------|------|-------------|--------|
-| CVE-2019-5736 | `cve_2019_5736.py` | runc overwrite via /proc/self/exe | ✅ Real |
-| Docker Socket Abuse | `docker_socket.py` | Host takeover via docker.sock | ✅ Simulated |
-| CAP_SYS_PTRACE | `capabilities_abuse.py` | Strace container PID | ✅ Simulated |
-| OverlayFS (CVE-2023-0386) | `overlayfs_exploit.py` | Read-only overwrite via OverlayFS | ✅ Simulated |
-| CVE-2021-3156 | `cve_2021_3156.py` | sudoedit heap overflow | ✅ Simulated |
-| CVE-2020-13409 | `cve_2020_13409.py` | docker.sock mount attack | ✅ Simulated |
-| CVE-2020-15257 | `cve_2020_15257.py` | overwrite host /root via privileged container | ✅ Simulated |
-| Writable Cgroup | `writable_cgroup.py` | notify_on_release escape path | ✅ Simulated |
-| Dirty Pipe (CVE-2022-0847) | `dirty_pipe_escalation.py` | overwrite readonly file | ✅ Simulated |
-
+| Technique / CVE              | File                         | Description                                 | Status        |
+|-----------------------------|------------------------------|---------------------------------------------|---------------|
+| CVE-2019-5736               | `cve_2019_5736.py`           | runc overwrite via /proc/self/exe           | 🟢 Real        |
+| Docker Socket Abuse         | `docker_socket_abuse.py`     | Host takeover via docker.sock               | 🟢 Real        |
+| CAP_SYS_PTRACE              | `cap_abuse.py`               | Strace container PID                        | 🟢 Real        |
+| OverlayFS (CVE-2023-0386)   | `overlayfs.py`               | Read-only overwrite via OverlayFS           | 🟡 Simulated   |
+| CVE-2021-3156               | `sudoedit.py`                | sudoedit heap overflow                      | 🟡 Simulated   |
+| CVE-2020-13409              | `cve_2020_13409.py`          | docker.sock mount attack                    | 🟡 Simulated   |
+| CVE-2020-15257              | `cve_2020_15257.py`          | overwrite host /root via privileged container | 🟡 Simulated |
+| Writable Cgroup             | `writable_cgroup.py`         | notify_on_release escape path               | 🟡 Simulated   |
+| Dirty Pipe (CVE-2022-0847)  | `dirty_pipe_escalation.py`   | overwrite readonly file                     | 🟡 Simulated   |
 
 ## 🧪 Simulation vs Unsafe Mode
 
