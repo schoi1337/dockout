@@ -41,19 +41,8 @@ python3 src/core.py --auto --simulate --container test-container --report html
 
 ## 🎥 Demo
 
-### 🟡 Simulated Mode (`--simulate`)
-
-> All exploits are simulated safely with no real container changes.
-
 ![Simulated Demo](docs/simulated_demo.gif)
 
----
-
-### 🟢 Real Exploit Mode (`--unsafe`)
-
-> Real exploits are executed against the container. Dangerous actions such as `/bin/sh` overwrite may occur.
-
-![Real Demo](docs/real_demo.gif)
 
 ## 🔬 PoC Coverage
 
