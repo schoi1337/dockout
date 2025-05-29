@@ -6,14 +6,14 @@ It includes both simulated and real-world test environments using Docker contain
 ## 🧰 Prerequisites
 
 - Kali Linux (2025.1 or later recommended)
-- Python 3.9+ (default on Kali)
 - Docker
+- PyPy3 with venv support (`pypy3-venv`)
 
-Install dependencies:
+Install system dependencies:
 
 ```bash
 sudo apt update
-sudo apt install -y docker.io 
+sudo apt install -y docker.io pypy3 pypy3-venv
 sudo systemctl start docker
 sudo systemctl enable docker
 ```
@@ -27,10 +27,10 @@ git clone https://github.com/schoi1337/dockout.git
 cd dockout
 ```
 
-2. Create a virtual environment:
+2. Create an isolated virtual environment using PyPy3:
 
 ```bash
-python3 -m venv venv
+pypy3 -m venv venv
 source venv/bin/activate
 ```
 
@@ -39,6 +39,8 @@ source venv/bin/activate
 ```bash
 pip install -r requirements.txt
 ```
+
+> ✅ This avoids `PEP 668` issues on Kali and prevents breaking system-managed Python.
 
 ## 🧪 Testing with Dev Containers
 
@@ -69,7 +71,7 @@ You can repeat this with other targets:
 From another terminal, run:
 
 ```bash
-python3 src/core.py --auto --simulate --container test-cve --report html
+python src/core.py --auto --simulate --container test-cve --report html
 ```
 
 This will simulate all applicable exploits and generate reports:
@@ -82,7 +84,7 @@ This will simulate all applicable exploits and generate reports:
 To execute real container escape exploits:
 
 ```bash
-python3 src/core.py --auto --unsafe --container test-cve --report html
+python src/core.py --auto --unsafe --container test-cve --report html
 ```
 
 >⚠️ **Warning:** This may overwrite files inside the container or cause system instability. Only use in isolated test environments.
@@ -102,4 +104,4 @@ docs/sample_report.html
 
 ## 📫 Contact
 
-For questions, visit:[https://github.com/schoi1337/dockout/issues](https://github.com/schoi1337/dockout/issues)
+For questions, visit: [https://github.com/schoi1337/dockout/issues](https://github.com/schoi1337/dockout/issues)
