@@ -16,12 +16,12 @@ def list_containers():
     for container in containers:
         print(f"Container {container.id} - {container.name} - Status: {container.status}")
 
-def generate_reports(results_dict, report_type):
-    # Generate report in the specified format
+def generate_reports(results_dict, report_type, simulate):
+    # Generate report in the specified format and pass simulate flag
     if report_type == 'html':
-        generate_html_report(results_dict)
+        generate_html_report(results_dict, simulate=simulate)
     elif report_type == 'json':
-        generate_json_report(results_dict)
+        generate_json_report(results_dict, simulate=simulate)
 
 def parse_args():
     # Parse CLI arguments
@@ -44,7 +44,7 @@ async def async_run_module_with_env(module, container, cve_id, env_info, semapho
                 if not module.is_vulnerable(env_info):
                     print(f"[!] {cve_id} skipped: not vulnerable under current environment.")
                     return (cve_id, "Skipped (not vulnerable)")
-            return (cve_id, module.run(container, simulate=simulate))  # Pass simulate flag
+            return (cve_id, module.run(container, simulate=simulate))  # Pass simulate flag to PoC
 
         return await loop.run_in_executor(None, _exec)
 
@@ -82,6 +82,7 @@ if __name__ == "__main__":
     # Default to simulate unless --unsafe is explicitly used
     simulate = not args.unsafe
 
+    # Warn user before executing real exploits
     if not simulate:
         print("\n[!] WARNING: You are about to execute REAL exploits on the container.")
         print("This may modify system files, overwrite binaries, or cause instability.")
@@ -90,6 +91,7 @@ if __name__ == "__main__":
             print("[-] Confirmation failed. Aborting execution.")
             exit(1)
 
+    # Get the target container
     if args.container:
         try:
             container = client.containers.get(args.container)
@@ -100,17 +102,18 @@ if __name__ == "__main__":
         print("[-] Please specify --container")
         exit(1)
 
+    # Run all or one attack based on args
     if args.auto:
         results = asyncio.run(run_all_attacks_async(container, simulate=simulate))
         if args.report:
-            generate_reports(results, args.report)
+            generate_reports(results, args.report, simulate=simulate)
 
     elif args.attack:
         module = load_attack_module(args.attack)
         if module and hasattr(module, 'run'):
             result = module.run(container, simulate=simulate)
             if args.report:
-                generate_reports({args.attack: result}, args.report)
+                generate_reports({args.attack: result}, args.report, simulate=simulate)
         else:
             print("[-] Attack module is invalid or missing 'run' function.")
     else:
