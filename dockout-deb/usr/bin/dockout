@@ -1,2 +1,2 @@
 #!/bin/bash
-python3 /usr/share/dockout/src/core.py "$@"
+python3 /usr/local/dockout/src/core.py "$@"
