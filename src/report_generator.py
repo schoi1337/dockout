@@ -20,8 +20,13 @@ RISK_DB = {
 
 def format_entry(cve, result, simulate):
     meta = RISK_DB.get(cve.upper(), {})
+    
     # Normalize result to string
-    result_str = result if isinstance(result, str) else json.dumps(result)
+    if isinstance(result, dict):
+        result_str = result.get("message", str(result))
+    else:
+        result_str = result
+
     return {
         "cve_id": cve,
         "result": result_str,
