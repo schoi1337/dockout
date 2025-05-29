@@ -1,0 +1,2 @@
+#!/bin/bash
+python3 /usr/share/dockout/src/core.py "$@"

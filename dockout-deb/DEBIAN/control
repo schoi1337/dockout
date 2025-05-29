@@ -1,0 +1,8 @@
+Package: dockout
+Version: 1.0.0
+Section: security
+Priority: optional
+Architecture: all
+Depends: python3, docker.io, python3-pip
+Maintainer: schoi1337 <schoi13337@gmail.com>
+Description: Dockout is a red-team framework for automated container escape simulation and PoC execution.
