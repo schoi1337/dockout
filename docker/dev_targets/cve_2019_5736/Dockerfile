@@ -6,7 +6,7 @@ FROM ubuntu:20.04
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Install basic CLI tools required for exploit and validation
-RUN apt update && apt install -y bash coreutils curl
+RUN apt update && apt install -y --no-install-recommends bash coreutils curl && apt clean
 
 # Create a marker file to validate pre-exploit state
 RUN echo "LEGIT SHELL" > /LEGIT_MARKER
