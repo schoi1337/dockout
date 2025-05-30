@@ -22,9 +22,9 @@ It provides a modular exploit engine, plugin-based PoC loading, and safe simulat
 
 ```bash
 # Run a specific PoC
-python3 src/core.py --attack cve-2019-5736 --container test-container --simulate
+python3 src/core.py --attack cve-2019-5736 --container test-container --unsafe
 
-# Run all PoCs and generate a report
+# Run all PoCs in simulation mode and generate a report
 python3 src/core.py --auto --simulate --container test-container --report html
 ```
 
