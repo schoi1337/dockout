@@ -4,7 +4,11 @@
 Dockout is a red-team focused tool that automates detection and exploitation of container escape paths.  
 It provides a modular exploit engine, plugin-based PoC loading, and safe simulation mode — supporting both known CVEs and Docker misconfigurations.
 
-> ⚠️ Real exploit modules require explicit user confirmation and are gated behind a safety prompt. Use only in controlled environments with appropriate authorization.
+> ⚠️ Ethical Use Disclaimer
+This tool is intended strictly for authorized testing and research.
+Do not use it against systems you do not own or have explicit permission to test.
+The author assumes no responsibility for misuse or damage caused by this tool.
+
 
 
 ## 🚀 Features
