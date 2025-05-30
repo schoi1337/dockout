@@ -101,8 +101,14 @@ This tool is intended for authorized testing, research, and education only.
 
 ## ⚖️ Legal Disclaimer
 
-Unauthorized use of this tool against systems you do not own or have explicit permission to test may violate local laws and regulations. 
-The author assumes no liability for misuse or damage caused by this tool.
+Dockout is intended strictly for authorized testing and educational purposes.  
+By using this tool, you agree that:
+
+- You will not use it against systems you do not own or have explicit written permission to test.
+- You understand that real exploit modules may cause permanent damage or system compromise.
+- The author(s) of this tool assume **no responsibility for misuse, damage, or legal consequences**.
+
+If you are unsure whether your usage is authorized — **do not run Dockout**.
 
 ## 📜 License
 
