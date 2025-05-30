@@ -99,6 +99,10 @@ This tool is intended for authorized testing, research, and education only.
 - Never run against systems you do not own or control
 - The author assumes no liability for misuse or damage caused by this tool
 
+## ⚖️ Legal Disclaimer
+
+Unauthorized use of this tool against systems you do not own or have explicit permission to test may violate local laws and regulations. 
+The author assumes no liability for misuse or damage caused by this tool.
 
 ## 📜 License
 
